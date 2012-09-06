@@ -1,0 +1,15 @@
+{
+  "author": "Tyler Dodge <tldodge@ncsu.edu>",
+  "name": "rlv",
+  "description": "Remote LaTeX Viewer",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
