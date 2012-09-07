@@ -1,11 +1,17 @@
 var self = this;
 var socket = io.connect(
-    window.location.protocol + '//' + window.location.hostname + ':' + IO_PORT
+    window.location.protocol + '//' + window.location.hostname + ':' + port
     );
 var reconnect_interval = 5000;
 
 function reconnect() {
   socket.socket.connect();
+}
+function loadDocument() {
+  $.ajax(window.location.protocol + '//' + window.location.hostname + ':' + port + "/file.pdf")
+   .done(function(data) {
+      $('#viewer').text(data);
+  });
 }
 
 socket.on('error', function(err) {
@@ -17,5 +23,10 @@ socket.on('disconnect', function(err) {
 });
 
 socket.on('connect', function() {
-})
+  loadDocument();
+});
+socket.on('file_update', function() {
+  $('#viewer').text("FILE UPDATED");
+  loadDocument();
+});
 

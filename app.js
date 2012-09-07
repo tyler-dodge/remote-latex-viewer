@@ -1,8 +1,9 @@
-#!node
-var args = { '0': 'rlv', '1': 'file.tex', '2': '3000' };
+#!/usr/local/bin/node
+var args = process.argv;
 var settings = {};
-settings.file = args[1];
-settings.port = args[2];
+var fs = require('fs');
+settings.file = args[2];
+settings.port = args[3];
 if (settings.file === null || settings.file === undefined) {
   console.log("Help");
   return;
@@ -25,6 +26,7 @@ app.configure(function() {
 
   app.use(express.methodOverride());
   app.use(express.cookieParser());
+  app.set('view options', { layout: false })
   app.use(express.session({
     secret: "hugc;yfaeokxqwv';",
     key: 'express.session',
@@ -33,9 +35,9 @@ app.configure(function() {
   app.use(express.bodyParser());
   app.use(app.router);
 });
-app.set("view engine", "ejs");
 app.configure("development", function() {
   app.use(express.static(__dirname + "/public"));
+  app.set('view options', { layout: false })
   app.use(express.errorHandler({
     dumpExceptions: true,
     showStack: true
@@ -51,3 +53,30 @@ app.configure("production", function() {
 });
 
 app.listen(settings.port);
+io = io.listen(app);
+io.sockets.on('connection', function(socket) {
+  fs.watchFile(settings.file,function(curr, prev) {
+    socket.emit("file_update", settings.file);
+  });
+});
+app.get('/', function(req, res) {
+  res.pageTitle="Hello";
+  console.log(res);
+  res.render('index.jade', {
+    locals: {
+      pageTitle:"Remote LaTeX Viewer: " + settings.file,
+      port:settings.port
+    }
+  });
+});
+app.get('/file.pdf', function(req, res) {
+  fs.readFile(settings.file, function(err, data) {
+    if (err === undefined || err === null) {
+      res.write(data.toString());
+    } else {
+      console.log(err);
+      res.write(err);
+    }
+    res.end();
+  });
+});
