@@ -15,7 +15,7 @@ if (settings.port === null || settings.port === undefined) {
 
 var express = require("express");
 var io = require('socket.io');
-
+var exec = require('child_process').exec;
 var app = this.app = express.createServer();  
 
 /**
@@ -56,7 +56,9 @@ app.listen(settings.port);
 io = io.listen(app);
 io.sockets.on('connection', function(socket) {
   fs.watchFile(settings.file,function(curr, prev) {
-    socket.emit("file_update", settings.file);
+    exec("texi2pdf " + settings.file, function(err,stdout,stderr) {
+      socket.emit("file_update", settings.file);
+    });
   });
 });
 app.get('/', function(req, res) {
@@ -70,7 +72,7 @@ app.get('/', function(req, res) {
   });
 });
 app.get('/file.pdf', function(req, res) {
-  fs.readFile(settings.file, function(err, data) {
+  fs.readFile(settings.file.replace('.tex', '.pdf'), function(err, data) {
     if (err === undefined || err === null) {
       res.write(data);
     } else {
