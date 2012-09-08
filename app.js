@@ -12,6 +12,11 @@ if (settings.file === null || settings.file === undefined) {
 if (settings.port === null || settings.port === undefined) {
   settings.port = 3000;
 }
+settings.destination = settings.file.replace('.tex','.pdf');
+if (settings.destination === settings.file) {
+  console.log("ERROR: file must have .tex extension");
+  return;
+}
 
 var express = require("express");
 var io = require('socket.io');
@@ -53,13 +58,20 @@ app.configure("production", function() {
 });
 
 app.listen(settings.port);
-io = io.listen(app);
+io = io.listen(app, {'log level': 0});
 var sockets = [];
 fs.watchFile(settings.file,function(curr, prev) {
-  exec("texi2pdf " + settings.file, function(err,stdout,stderr) {
-    sockets.forEach(function(socket) {
-      socket.emit("file_update");
-    });
+  exec("texi2pdf " + settings.file + " -o " + settings.destination, function(err,stdout,stderr) {
+    if (!(err === null || err === undefined)) {
+      console.log("Update Fail");
+      console.log(err);
+      console.log(stderr);
+    } else {
+      console.log("Update Successful");
+      sockets.forEach(function(socket) {
+        socket.emit("file_update");
+      });
+    }
   });
 });
 io.sockets.on('connection', function(socket) {
@@ -70,7 +82,6 @@ io.sockets.on('connection', function(socket) {
 });
 app.get('/', function(req, res) {
   res.pageTitle="Hello";
-  console.log(res);
   res.render('index.jade', {
     locals: {
       pageTitle:"Remote LaTeX Viewer: " + settings.file,
@@ -79,12 +90,11 @@ app.get('/', function(req, res) {
   });
 });
 app.get('/file.pdf', function(req, res) {
-  fs.readFile(settings.file.replace('.tex', '.pdf'), function(err, data) {
+  fs.readFile(settings.destination, function(err, data) {
     if (err === undefined || err === null) {
       res.write(data);
     } else {
       console.log(err);
-      res.write(err);
     }
     res.end();
   });
