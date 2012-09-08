@@ -54,12 +54,19 @@ app.configure("production", function() {
 
 app.listen(settings.port);
 io = io.listen(app);
-io.sockets.on('connection', function(socket) {
-  fs.watchFile(settings.file,function(curr, prev) {
-    exec("texi2pdf " + settings.file, function(err,stdout,stderr) {
-      socket.emit("file_update", settings.file);
+var sockets = [];
+fs.watchFile(settings.file,function(curr, prev) {
+  exec("texi2pdf " + settings.file, function(err,stdout,stderr) {
+    sockets.forEach(function(socket) {
+      socket.emit("file_update");
     });
   });
+});
+io.sockets.on('connection', function(socket) {
+  socket.on('disconnect',function() {
+    sockets.splice(sockets.indexOf(socket),1);
+  });
+  sockets.push(socket);
 });
 app.get('/', function(req, res) {
   res.pageTitle="Hello";
