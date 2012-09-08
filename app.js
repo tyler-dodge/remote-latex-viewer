@@ -80,6 +80,9 @@ function compileTex(file, destination, callback) {
   });
 }
 fs.watchFile(settings.file,function(curr, prev) {
+  sockets.forEach(function(socket) {
+    socket.emit("file_start_compile");
+  });
   compileTex(settings.file,settings.destination,function() {
     sockets.forEach(function(socket) {
       socket.emit("file_update");
