@@ -60,18 +60,24 @@ app.configure("production", function() {
 app.listen(settings.port);
 io = io.listen(app, {'log level': 0});
 var sockets = [];
-fs.watchFile(settings.file,function(curr, prev) {
-  exec("texi2pdf " + settings.file + " -o " + settings.destination, function(err,stdout,stderr) {
+function compileTex(file, destination, callback) {
+  exec("texi2pdf " + file + " -o " + destination, function(err,stdout,stderr) {
     if (!(err === null || err === undefined)) {
       console.log("Update Fail");
       console.log(err);
       console.log(stderr);
     } else {
+      console.log(destination);
       console.log("Update Successful");
-      sockets.forEach(function(socket) {
-        socket.emit("file_update");
-      });
+      callback();
     }
+  });
+}
+fs.watchFile(settings.file,function(curr, prev) {
+  compileTex(settings.file,settings.destination,function() {
+    sockets.forEach(function(socket) {
+      socket.emit("file_update");
+    });
   });
 });
 io.sockets.on('connection', function(socket) {
@@ -89,13 +95,24 @@ app.get('/', function(req, res) {
     }
   });
 });
+
 app.get('/file.pdf', function(req, res) {
-  fs.readFile(settings.destination, function(err, data) {
-    if (err === undefined || err === null) {
-      res.write(data);
+  fs.exists(settings.destination, function(exists) {
+    var writeRes = function() {
+      fs.readFile(settings.destination, function(err, data) {
+        if (err === undefined || err === null) {
+          res.write(data);
+        } else {
+          console.log(err);
+        }
+        res.end();
+      });
+    };
+    if (exists) {
+      writeRes();
     } else {
-      console.log(err);
+      console.log("COMPILE");
+      compileTex(settings.file,settings.destination,writeRes);
     }
-    res.end();
   });
 });
