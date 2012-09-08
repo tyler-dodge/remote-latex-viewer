@@ -21,7 +21,7 @@ if (settings.destination === settings.file) {
 var express = require("express");
 var io = require('socket.io');
 var exec = require('child_process').exec;
-var app = this.app = express.createServer();  
+var app = express();  
 
 /**
  * Configure
@@ -63,8 +63,8 @@ exec('ifconfig | grep inet | grep netmask | grep -v 127.0.0.1', function(err,std
   stdout = stdout.replace(' ', '');
   console.log("Server Address: " + stdout + ":" + settings.port);
 });
-app.listen(settings.port);
-io = io.listen(app, {'log level': 0});
+var server = app.listen(settings.port);
+io = io.listen(server, {'log level': 0});
 var sockets = [];
 function compileTex(file, destination, callback) {
   exec("texi2pdf " + file + " -o " + destination, function(err,stdout,stderr) {
@@ -98,10 +98,8 @@ io.sockets.on('connection', function(socket) {
 app.get('/', function(req, res) {
   res.pageTitle="Hello";
   res.render('index.jade', {
-    locals: {
-      pageTitle:"Remote LaTeX Viewer: " + settings.file,
-      port:settings.port
-    }
+    pageTitle:"Remote LaTeX Viewer: " + settings.file,
+    port:settings.port
   });
 });
 
