@@ -72,7 +72,7 @@ app.get('/', function(req, res) {
 app.get('/file.pdf', function(req, res) {
   fs.readFile(settings.file, function(err, data) {
     if (err === undefined || err === null) {
-      res.write(data.toString());
+      res.write(data);
     } else {
       console.log(err);
       res.write(err);

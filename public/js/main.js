@@ -8,10 +8,6 @@ function reconnect() {
   socket.socket.connect();
 }
 function loadDocument() {
-  $.ajax(window.location.protocol + '//' + window.location.hostname + ':' + port + "/file.pdf")
-   .done(function(data) {
-      $('#viewer').text(data);
-  });
 }
 
 socket.on('error', function(err) {
@@ -26,7 +22,9 @@ socket.on('connect', function() {
   loadDocument();
 });
 socket.on('file_update', function() {
-  $('#viewer').text("FILE UPDATED");
-  loadDocument();
+  var address = window.location.protocol + '//';
+  address += window.location.hostname + ':' + port + "/file.pdf";
+  $('#viewer').html("<embed src='file.pdf' width='100%' height='100%'></embed>");
+  
 });
 
