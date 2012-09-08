@@ -57,6 +57,12 @@ app.configure("production", function() {
   app.use(express.errorHandler());
 });
 
+exec('ifconfig | grep inet | grep netmask | grep -v 127.0.0.1', function(err,stdout,stderr) {
+  stdout = stdout.substr(0,stdout.indexOf('netmask'));
+  stdout = stdout.substr(stdout.indexOf('inet') + 5);
+  stdout = stdout.replace(' ', '');
+  console.log("Server Address: " + stdout + ":" + settings.port);
+});
 app.listen(settings.port);
 io = io.listen(app, {'log level': 0});
 var sockets = [];
