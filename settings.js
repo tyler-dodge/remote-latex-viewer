@@ -18,4 +18,5 @@ module.exports = function Settings(args) {
   }
   this.shouldContinue = function() {
     return this.errors.length > 0 || this.showHelp;
+  };
 };
