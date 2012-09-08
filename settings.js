@@ -4,7 +4,7 @@ module.exports = function Settings(args) {
   this.port = args[3];
   this.destination = this.file;
   this.showHelp = false;
-  this.errors = {};
+  this.errors = [];
   if (this.file === null || this.file === undefined) {
     this.showHelp = true;
   } else {

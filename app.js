@@ -1,6 +1,6 @@
 #!/usr/local/bin/node
 var args = process.argv;
-var settings = new require('./settings')(args);
+var settings = new (require('./settings'))(args);
 var fs = require('fs');
 
 var express = require("express");
