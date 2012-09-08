@@ -1,43 +1,31 @@
 #!/usr/local/bin/node
 var args = process.argv;
-var settings = {};
+var settings = new require('./settings')(args);
 var fs = require('fs');
-settings.file = args[2];
-settings.port = args[3];
-if (settings.file === null || settings.file === undefined) {
-  console.log("Help");
-  return;
-}
-
-if (settings.port === null || settings.port === undefined) {
-  settings.port = 3000;
-}
-settings.destination = settings.file.replace('.tex','.pdf');
-if (settings.destination === settings.file) {
-  console.log("ERROR: file must have .tex extension");
-  return;
-}
 
 var express = require("express");
 var io = require('socket.io');
 var exec = require('child_process').exec;
 var app = this.app = express.createServer();  
 
+if (!settings.shouldContinue()) {
+  if (settings.showHelp) {
+    console.log(
+        "Usage: rlv <watched tex file> <port>\n" +
+        "where port defaults to 3000\n"
+    );
+  }
+  settings.errors.forEach(function(error) {
+    console.log(error + "\n");
+  });
+  return;
+}
+
 /**
  * Configure
  */
 app.configure(function() {
-  app.set('sessionStore', new express.session.MemoryStore());
-
-  app.use(express.methodOverride());
-  app.use(express.cookieParser());
   app.set('view options', { layout: false })
-  app.use(express.session({
-    secret: "hugc;yfaeokxqwv';",
-    key: 'express.session',
-    store: app.set('sessionStore')
-  }));
-  app.use(express.bodyParser());
   app.use(app.router);
 });
 app.configure("development", function() {
