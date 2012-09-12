@@ -1,4 +1,5 @@
 var fs = require('fs');
+var exec = require('child_process').exec;
 module.exports = function(app, texSocket, settings) {
   function compileTex(file, destination, callback) {
     exec("texi2pdf " + file + " -o " + destination, function(err,stdout,stderr) {
