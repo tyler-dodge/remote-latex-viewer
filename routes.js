@@ -14,7 +14,7 @@ module.exports = function(app, texSocket, settings) {
       }
     });
   }
-  fs.watchFile(settings.file,function(curr, prev) {
+  fs.watch(settings.file,function() {
     texSocket.notifyStartCompile();
     compileTex(settings.file,settings.destination, texSocket.notifyUpdate);
   });
