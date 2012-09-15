@@ -41,7 +41,11 @@ module.exports = function(app, texSocket, settings) {
         writeRes();
       } else {
         console.log("COMPILE");
-        compileTex(settings.file,settings.destination,writeRes);
+        texSocket.notifyStartCompile();
+        compileTex(settings.file,settings.destination,function() {
+          writeRes();
+          texSocket.notifyUpdate();
+        });
       }
     });
   });
