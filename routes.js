@@ -2,7 +2,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 module.exports = function(app, texSocket, settings) {
   function compileTex(file, destination, callback) {
-    exec("texi2pdf " + file + " -o " + destination, function(err,stdout,stderr) {
+    exec("texi2pdf -b " + file + " -o " + destination, function(err,stdout,stderr) {
       if (!(err === null || err === undefined)) {
         console.log("Update Fail");
         console.log(err);
