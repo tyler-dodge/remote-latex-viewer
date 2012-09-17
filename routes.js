@@ -2,11 +2,11 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 module.exports = function(app, texSocket, settings) {
   function compileTex(file, destination, callback) {
-    exec("texi2pdf -b " + file + " -o " + destination, function(err,stdout,stderr) {
-      if (!(err === null || err === undefined)) {
-        console.log("Update Fail");
-        console.log(err);
-        console.log(stderr);
+    exec("pdflatex -halt-on-error -file-line-error " + file + " -o " + destination + " | grep '" + settings.file + ":'" ,  function(err,stdout,stderr) {
+      //grep does not return an error if it finds the data
+      if (err === null || err === undefined) {
+        console.log(stdout);
+        console.log("Update Failed");
       } else {
         console.log(destination);
         console.log("Update Successful");
