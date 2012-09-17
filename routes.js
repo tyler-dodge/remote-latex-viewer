@@ -57,7 +57,7 @@ module.exports = function(app, texSocket, settings) {
             texSocket.notifyUpdate();
           } else {
             res.end();
-            texSocket.notify(error);
+            texSocket.notifyUpdate(error);
           }
         });
       }
