@@ -10,6 +10,7 @@ module.exports = function Settings(args) {
     this.showHelp = true;
   } else {
     this.destination = this.file.replace('.tex','.pdf');
+    this.destinationDir = path.dirname(this.destination);
     if (this.destination === this.file) {
       this.errors.push(this.destination + " must have extension .tex");
     }

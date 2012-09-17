@@ -3,7 +3,8 @@ var exec = require('child_process').exec;
 module.exports = function(app, texSocket, settings) {
   var lastError = "";
   function compileTex(file, destination, callback) {
-    exec("pdflatex -halt-on-error -file-line-error " + file + " -o " + destination + " | grep '" + settings.file + ":'" ,  function(err,stdout,stderr) {
+    console.log("pdflatex -halt-on-error -file-line-error " + file + " -o " + destination + " | grep '" + settings.file + ":'"); 
+    exec("pdflatex -halt-on-error -file-line-error -output-directory " + settings.destinationDir + " " + file + " | grep \"" + settings.file + ":\"" ,  function(err,stdout,stderr) {
       //grep does not return an error if it finds the data
       if (err === null || err === undefined) {
         lastError = stdout;
