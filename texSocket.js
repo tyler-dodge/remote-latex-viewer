@@ -2,6 +2,7 @@ var io = require('socket.io');
 var fs = require('fs');
 var exec = require('child_process').exec;
 module.exports = function texSocket(app) {
+  var self = this;
   io = io.listen(app, {'log level': 0});
   var sockets = [];
   io.on('connection', function(socket) {
@@ -26,7 +27,7 @@ module.exports = function texSocket(app) {
         socket.emit("file_update");
       });
     } else {
-      this.notifyError();
+      self.notifyError();
     }
   };
 };
