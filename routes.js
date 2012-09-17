@@ -19,9 +19,11 @@ module.exports = function(app, texSocket, settings) {
   }
 
   console.log(settings.file);
-  fs.watch(settings.file,function() {
-    texSocket.notifyStartCompile();
-    compileTex(settings.file,settings.destination, texSocket.notifyUpdate);
+  fs.watchFile(settings.file, 
+      { persistent: true, interval: 500}, 
+      function() {
+      texSocket.notifyStartCompile();
+      compileTex(settings.file,settings.destination, texSocket.notifyUpdate);
   });
   app.get('/', function(req, res) {
     res.render('index.jade', {
