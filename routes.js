@@ -2,7 +2,11 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 module.exports = function(app, texSocket, settings) {
   var lastError = "";
-  var lastIsSuccess = false;
+  var lastIsSuccess = true;
+
+  //Delete pdf at start
+  fs.unlink(settings.destination);
+
   function compileTex(file, destination, callback) {
     exec("pdflatex -halt-on-error -file-line-error -output-directory " + settings.destinationDir + " " + file + " | grep \"" + settings.file + ":\"" ,  function(err,stdout,stderr) {
       //grep does not return an error if it finds the data
@@ -34,12 +38,11 @@ module.exports = function(app, texSocket, settings) {
     });
   });
 
-  app.get('/status', function(req, res) {
+  app.get('/error', function(req, res) {
     if (lastIsSuccess) {
-      res.send(200);
+      res.send(204);
     } else {
-      res.write(lastError);
-      res.end();
+      res.send(lastError, 200);
     }
   });
 
@@ -66,7 +69,7 @@ module.exports = function(app, texSocket, settings) {
             texSocket.notifyUpdate();
           } else {
             res.end();
-            texSocket.notifyUpdate(error);
+            texSocket.notifyUpdate();
           }
         });
       }

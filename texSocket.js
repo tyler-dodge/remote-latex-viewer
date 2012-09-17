@@ -16,18 +16,9 @@ module.exports = function texSocket(app) {
       socket.emit("file_start_compile");
     });
   };
-  this.notifyError = function notifyError() {
-    sockets.forEach(function(socket) {
-      socket.emit("file_error");
-    });
-  };
   this.notifyUpdate = function notifyUpdate(error) {
-    if (error === null || error === undefined) {
-      sockets.forEach(function(socket) {
-        socket.emit("file_update");
-      });
-    } else {
-      self.notifyError();
-    }
+    sockets.forEach(function(socket) {
+      socket.emit("file_update");
+    });
   };
 };

@@ -3,6 +3,23 @@ function baseUrl() {
 }
 
 function loadPDF() {
+  var http;
+  if (window.XMLHttpRequest) http = new XMLHttpRequest();
+  else http = new ActiveXObject("Microsoft.XMLHTTP");
+  http.open("GET", "/error", true);
+  http.send();
+  http.onreadystatechange = function() {
+    console.log('received status', http.status, http.responseText);
+    if (http.readyState == 4 && http.status == 204) {
+      renderPDF();
+    } else {
+      showErrors(http.responseText);
+    }
+  };
+}
+
+function renderPDF() {
+  document.getElementById("error").style.display="none";
   clearPages();
   PDFJS.disableWorker = true;
   PDFJS.getDocument('/file.pdf').then(function getPDF(pdf) {
@@ -14,6 +31,7 @@ function loadPDF() {
         pdf.getPage(count).then(getPage);
       } else {
         document.getElementById('viewer').style.height = "";
+        document.getElementById("viewer").style.display = "block";
       }
     };
     pdf.getPage(count).then(getPage);
@@ -35,31 +53,37 @@ function clearPages() {
   viewer.style.height = viewer.clientHeight + "px";
   viewer.innerHTML = "";
 }
+function showErrors(errorString) {
+  var errorsHtml = "<b>Compile Error</b><br />" + (errorString.split("\n").join('<br />'));
+  document.getElementById("viewer").style.display="none";
+  document.getElementById("error").style.display="block";
+  document.getElementById("error").innerHTML = errorsHtml;
+}
   
-var socket = io.connect( baseUrl() );
 var socket = io.connect( baseUrl() );
 var reconnect_interval = 5000;
 
 function reconnect() {
   socket.socket.connect();
 }
-
 socket.on('error', function(err) {
   setTimeout(reconnect, reconnect_interval);
 });
-
 socket.on('disconnect', function(err) {
   setTimeout(reconnect, reconnect_interval);
 });
 
 socket.on('connect', function() {
-});
-
-socket.on('file_update', function() {
   loadPDF();
-  document.getElementById('loading').style.display = 'none';
 });
 
 socket.on('file_start_compile', function() {
   document.getElementById('loading').style.display = 'block';
 });
+
+socket.on('file_update', function() {
+  document.getElementById('loading').style.display = 'none';
+  loadPDF();
+});
+
+
