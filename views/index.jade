@@ -8,11 +8,12 @@ html(lang="en")
     script(src='/socket.io/socket.io.js')
     script(src='/js/main.js')
     link(rel='stylesheet', href='css/style.css')
-  body(style="width:100%;height:100%;padding:0px;margin:0px;text-align:center", onLoad="loadPDF()")
+  body(onLoad="loadPDF()")
 
-    div#error(style="text-align: center; font-size: 20px;")
+    div#error
+      div#errorDescription
     
-    div#viewer(style='margin-left:auto;margin-right:auto;')
+    div#viewer
 
     div#loading
-      img(style='display:none;position: fixed; top: 50%; left: 50%; z-index: 1000;',src='img/spinner.gif')
+      img(src='img/spinner.gif')

@@ -12,15 +12,15 @@ function loadPDF() {
     console.log('received status', http.status, http.responseText);
     if (http.readyState == 4 && http.status == 204) {
       renderPDF();
-    } else {
+    } else if (http.readyState == 4) {
       showErrors(http.responseText);
     }
   };
 }
 
 function renderPDF() {
-  document.getElementById("error").style.display="none";
   clearPages();
+  document.getElementById("error").style.display="none";
   PDFJS.disableWorker = true;
   PDFJS.getDocument('/file.pdf').then(function getPDF(pdf) {
     var count = 1;
@@ -55,9 +55,8 @@ function clearPages() {
 }
 function showErrors(errorString) {
   var errorsHtml = "<b>Compile Error</b><br />" + (errorString.split("\n").join('<br />'));
-  document.getElementById("viewer").style.display="none";
   document.getElementById("error").style.display="block";
-  document.getElementById("error").innerHTML = errorsHtml;
+  document.getElementById("errorDescription").innerHTML = errorsHtml;
 }
   
 var socket = io.connect( baseUrl() );
