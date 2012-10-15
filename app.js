@@ -26,12 +26,10 @@ if (settings.shouldStop()) {
  * Configure
  */
 app.configure(function() {
-  app.set('view options', { layout: false })
   app.use(app.router);
 });
 app.configure("development", function() {
-  app.use(express.static(__dirname + "/public"));
-  app.set('view options', { layout: false })
+  app.use(express["static"](__dirname + "/public"));
   app.use(express.errorHandler({
     dumpExceptions: true,
     showStack: true
@@ -40,14 +38,15 @@ app.configure("development", function() {
 
 app.configure("production", function() {
   var oneYear = 31557600000;
-  app.use(express.static(__dirname + "/public", {
+  app.use(express["static"](__dirname + "/public", {
     maxAge: oneYear
   }));
   app.use(express.errorHandler());
 });
 
 ip(function(err,server) {
-  console.log(server + ":" + settings.port);
+  console.log("Serving at " + server + ":" + settings.port);
+  console.log("Watching " + settings.file + "...");
 });
 var server = app.listen(settings.port);
 var sockets = new TexSocket(server);
