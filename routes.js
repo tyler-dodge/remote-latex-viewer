@@ -11,7 +11,7 @@ module.exports = function(app, texSocket, settings) {
     var lastSlash = file.lastIndexOf("/") + 1;
     var path = file.substr(0, lastSlash);
     var fileName = file.substr(lastSlash, file.length);
-    console.log(fileName + " modified! Updating...");
+    console.log(fileName + " modified! Compiling...");
     exec("pdflatex -halt-on-error -file-line-error -output-directory " + settings.destinationDir + " " + file +
       " | grep -A 1 '" + settings.file + ":'" + //-A 1 to get 2 line errors
       " | head -n 2" + //Only get the first error
@@ -26,8 +26,7 @@ module.exports = function(app, texSocket, settings) {
         callback(stdout);
       } else {
         lastIsSuccess = true;
-        console.log(destination);
-        console.log("--> Update Successful!");
+        console.log("--> Update Successful! Wrote " + destination.substr(destination.lastIndexOf("/")+1, destination.length) + ".");
         callback();
       }
     });
@@ -69,7 +68,6 @@ module.exports = function(app, texSocket, settings) {
       if (exists) {
         writeRes();
       } else {
-        console.log("Compiling...");
         texSocket.notifyStartCompile();
         compileTex(settings.file,settings.destination,function(error) {
           if (error === null || error === undefined) {

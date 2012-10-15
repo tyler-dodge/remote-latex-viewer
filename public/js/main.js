@@ -9,7 +9,7 @@ function loadPDF() {
   http.open("GET", "/error", true);
   http.send();
   http.onreadystatechange = function() {
-    console.log('received status', http.status, http.responseText);
+    //console.log('received status', http.status, http.responseText);
     if (http.readyState == 4 && http.status == 204) {
       renderPDF();
     } else if (http.readyState == 4) {
@@ -22,6 +22,7 @@ function renderPDF() {
   clearPages();
   document.getElementById("error").style.display="none";
   PDFJS.disableWorker = true;
+  //console.log('renderPDF()');
   PDFJS.getDocument('/file.pdf').then(function getPDF(pdf) {
     var count = 1;
     var getPage = function(page) {
@@ -78,10 +79,12 @@ socket.on('connect', function() {
 });
 
 socket.on('file_start_compile', function() {
+  //console.log('file_start_compile');
   document.getElementById('loading').style.display = 'block';
 });
 
 socket.on('file_update', function() {
+  //console.log('file_update');
   document.getElementById('loading').style.display = 'none';
   loadPDF();
 });
