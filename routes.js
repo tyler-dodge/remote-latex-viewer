@@ -69,7 +69,7 @@ module.exports = function(app, texSocket, settings) {
       if (exists) {
         writeRes();
       } else {
-        console.log("COMPILE");
+        console.log("Compiling...");
         texSocket.notifyStartCompile();
         compileTex(settings.file,settings.destination,function(error) {
           if (error === null || error === undefined) {
