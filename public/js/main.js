@@ -52,7 +52,7 @@ function addPage(page) {
 function clearPages() {
   var viewer = document.getElementById('viewer');
   viewer.style.height = viewer.clientHeight + "px";
-  viewer.style.width = viewer.clientwidht + "px";
+  viewer.style.width = viewer.clientWidth + "px";
   viewer.innerHTML = "";
 }
 function showErrors(errorString) {
