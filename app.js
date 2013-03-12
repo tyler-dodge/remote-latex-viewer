@@ -6,7 +6,7 @@ var express = require("express");
 var exec = require('child_process').exec;
 var ip = require('./ip');
 var app = express();  
-var TexSocket = require('./TexSocket');
+var TexSocket = require('./texSocket');
 var Route = require('./routes');
 
 if (settings.shouldStop()) {
